@@ -8,7 +8,7 @@ KERNELDIR=""
 BOARD=""
 #BOARD="stm32f429discovery"
 #BOARD="stm32f469discovery"
-
+PATCHPATH=$PWD
 
 startupchecks()
 {
@@ -175,7 +175,7 @@ bootloader()
 cpio()
 {
     # Pre-built userspace
-    CPIO=$PWD/Stm32_mini_rootfs.cpio
+    CPIO=Stm32_mini_rootfs.cpio
     if [ ! -f Stm32_mini_rootfs.cpio ]; then
 	echo "###################################################"
 	echo "Downloading a pre-built userspace CPIO (RAMFS)"
@@ -197,6 +197,13 @@ kernel()
     echo "###################################################"
     cd $KERNELDIR
     BRANCH=`git branch | grep "*" | sed 's/* //'`
+
+    if [ "$BOARD" == "stm32f429discovery" ]; then
+      echo "###################################################"
+      echo "            Apply UART Fix Patch"
+      echo "###################################################"
+      git apply $PATCHPATH/dts.patch
+    fi
 
     echo "################################################################"
     echo "If $BRANCH is not the correct branch Ctrl+C now, else hit return"
